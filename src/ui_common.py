@@ -26,7 +26,7 @@ _CSS = """
   /* Cards: keyed containers (documented st-key-* classes) and our own HTML cards */
   [class*="st-key-card_"], .ops-card { background: #FFFFFF; border: 1px solid #D5DCE6; border-radius: 12px;
       box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04); }
-  .ops-card { padding: 1rem 1.1rem; min-height: 8.2rem; box-sizing: border-box; }
+  .ops-card { padding: 1rem 1.1rem; min-height: 6.4rem; box-sizing: border-box; }
   .ops-card.dark { background: #0B8F7A; border-color: #0B8F7A; }
   .ops-card.dark .ops-card-title, .ops-card.dark .ops-card-sub { color: #D9F2EC; }
   .ops-card.dark .ops-kpi { color: #FFFFFF; }
@@ -61,7 +61,7 @@ _CSS = """
   .ops-headline .sub { font-size: 0.85rem; color: #475467; margin: 0; }
   .ops-section { font-size: 1rem; font-weight: 600; color: #0B1F3A; margin: 0.25rem 0 0.5rem 0; }
   .ops-hero { background: linear-gradient(135deg, #0B1F3A 0%, #12305A 60%, #0B6B58 130%); color: #FFFFFF; border-radius: 14px;
-              padding: 1.2rem 1.4rem; min-height: 8.2rem; display: flex; justify-content: space-between; align-items: center;
+              padding: 1.2rem 1.4rem; min-height: 6.4rem; display: flex; justify-content: space-between; align-items: center;
               gap: 1rem; box-sizing: border-box; }
   .ops-hero p { margin: 0; }
   .ops-hero .t { font-size: 0.85rem; font-weight: 600; color: #B7C7DB; }

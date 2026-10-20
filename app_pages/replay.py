@@ -49,19 +49,17 @@ if not stored:
 
 run, run_id = stored
 m, results = run.metrics, run.results
-st.divider()
 if m["failed"]:
     st.error(f"{m['failed']} case(s) could not be processed. They count as incorrect on every field.")
 
 ui.kpi_cards([
-    ("Category accuracy", ui.fmt_pct(m["category_accuracy"]), f"{int(results['category_ok'].sum())} of {m['n']} correct"),
-    ("Priority accuracy", ui.fmt_pct(m["priority_accuracy"]), f"{int(results['priority_ok'].sum())} of {m['n']} correct"),
-    ("Team accuracy", ui.fmt_pct(m["team_accuracy"]), f"{int(results['team_ok'].sum())} of {m['n']} correct"),
-    ("Human-review rate", ui.fmt_pct(m["review_rate"]), f"{m['review_flagged']} of {m['n']} flagged"),
+    ("Category accuracy", ui.fmt_pct(m["category_accuracy"])),
+    ("Priority accuracy", ui.fmt_pct(m["priority_accuracy"])),
+    ("Team accuracy", ui.fmt_pct(m["team_accuracy"])),
+    ("Human-review rate", ui.fmt_pct(m["review_rate"])),
 ])
 
 # ---- cases ----
-st.divider()
 fcol, dcol = st.columns([3, 1], vertical_alignment="bottom")
 status_filter = fcol.segmented_control(
     "Show cases", ["All", STATUS_INCORRECT, STATUS_REVIEW, STATUS_CORRECT, STATUS_FAILED], default="All", key="replay_filter") or "All"
@@ -110,46 +108,47 @@ event = st.dataframe(table.style.apply(style_cells, axis=None), hide_index=True,
 
 
 # ---- detail ----
-case = view.iloc[event.selection.rows[0] if event.selection.rows else 0]
-st.markdown(f"**Case {case['request_id']}**: {SYMBOL[case['status']]}")
-tab_req, tab_cmp, tab_why = st.tabs(["Request", "Expected vs actual", "Review and explanation"])
-with tab_req:
-    st.write(case["request_text"])
-with tab_cmp:
-    st.dataframe(pd.DataFrame({
-        "Field": ["Category", "Priority", "Team"],
-        "Expected": [case["expected_category"], case["expected_priority"], case["expected_team"]],
-        "Actual": [case["actual_category"] or "none", case["actual_priority"] or "none", case["actual_team"] or "none"],
-        "Result": ["✓ Correct" if case[f"{f}_ok"] else "✗ Incorrect" for f in ("category", "priority", "team")],
-    }), hide_index=True, width="stretch")
-    notes = mismatch_notes(case)
-    if notes:
-        st.markdown("**What went wrong**")
-        for n in notes:
-            st.markdown(f"- {n}")
-    else:
-        st.success("All three fields match the label.")
-with tab_why:
-    if case["needs_review"]:
-        st.warning(case["review_reason"], icon=":material/flag:", title="Flagged for human review")
-    elif not case["exact_ok"]:
-        st.error("This error was not flagged for review.", icon=":material/warning:")
-    else:
-        st.info("Not flagged for review.")
-    if case["missing_information"]:
-        st.markdown(f"**Missing information:** {case['missing_information']}")
-    st.markdown("**Workflow explanation**")
-    st.write(case["explanation"])
+with ui.card("case_detail"):
+    case = view.iloc[event.selection.rows[0] if event.selection.rows else 0]
+    st.markdown(f"**Case {case['request_id']}**: {SYMBOL[case['status']]}")
+    tab_req, tab_cmp, tab_why = st.tabs(["Request", "Expected vs actual", "Review and explanation"])
+    with tab_req:
+        st.write(case["request_text"])
+    with tab_cmp:
+        st.dataframe(pd.DataFrame({
+            "Field": ["Category", "Priority", "Team"],
+            "Expected": [case["expected_category"], case["expected_priority"], case["expected_team"]],
+            "Actual": [case["actual_category"] or "none", case["actual_priority"] or "none", case["actual_team"] or "none"],
+            "Result": ["✓ Correct" if case[f"{f}_ok"] else "✗ Incorrect" for f in ("category", "priority", "team")],
+        }), hide_index=True, width="stretch")
+        notes = mismatch_notes(case)
+        if notes:
+            st.markdown("**What went wrong**")
+            for n in notes:
+                st.markdown(f"- {n}")
+        else:
+            st.success("All three fields match the label.")
+    with tab_why:
+        if case["needs_review"]:
+            st.warning(case["review_reason"], icon=":material/flag:", title="Flagged for human review")
+        elif not case["exact_ok"]:
+            st.error("This error was not flagged for review.", icon=":material/warning:")
+        else:
+            st.info("Not flagged for review.")
+        if case["missing_information"]:
+            st.markdown(f"**Missing information:** {case['missing_information']}")
+        st.markdown("**Workflow explanation**")
+        st.write(case["explanation"])
 
-with st.expander("Category confusion matrix"):
-    matrix = pd.crosstab(results["expected_category"], results["actual_category"]).reindex(
-        index=CATEGORIES, columns=CATEGORIES, fill_value=0)
-    fig = px.imshow(matrix, text_auto=True, aspect="auto", color_continuous_scale=["#FFFFFF", ui.MINT_DARK],
-                    labels=dict(x="Actual", y="Expected", color="Cases"))
-    fig.update_layout(height=300, margin=dict(l=0, r=0, t=5, b=0), coloraxis_showscale=False,
-                      plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
-    st.plotly_chart(fig, width="stretch")
+    with st.expander("Category confusion matrix"):
+        matrix = pd.crosstab(results["expected_category"], results["actual_category"]).reindex(
+            index=CATEGORIES, columns=CATEGORIES, fill_value=0)
+        fig = px.imshow(matrix, text_auto=True, aspect="auto", color_continuous_scale=["#FFFFFF", ui.MINT_DARK],
+                        labels=dict(x="Actual", y="Expected", color="Cases"))
+        fig.update_layout(height=300, margin=dict(l=0, r=0, t=5, b=0), coloraxis_showscale=False,
+                          plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig, width="stretch")
 
-st.divider()
-if st.button("Next: estimate the impact", icon=":material/arrow_forward:", key="next_impact"):
+
+if st.button("Next: estimate the impact", type="primary", icon=":material/arrow_forward:", key="next_impact"):
     st.switch_page("app_pages/impact.py")

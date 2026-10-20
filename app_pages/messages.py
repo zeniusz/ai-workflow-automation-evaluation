@@ -78,4 +78,3 @@ with feed, ui.card("feed"):
                 f'<p class="ops-mail-meta">From {escape(row["sender"])} to {escape(row["recipient"])}, '
                 f'{pd.to_datetime(row["created_at"]):%d %b %H:%M}</p>'
                 f'<p class="ops-mail-body">{escape(row["body"]).replace(chr(10), "<br>")}</p></div>')
-        st.caption("Preview of how this message would appear in an email client. It is shown in the app only; nothing is emailed.")

@@ -45,7 +45,6 @@ with ui.card("ai_try"):
                     st.write(f"{res.category}, {res.priority}, {res.team}")
                     if res.needs_review:
                         st.caption("Flagged: " + res.review_reason)
-                    st.caption(res.explanation)
 
 # ---- compare on a labelled dataset ----
 with ui.card("ai_compare_card"):
@@ -91,8 +90,7 @@ with ui.card("ai_compare_card"):
                       | (merged["actual_team_rules"] != merged["actual_team_llm"])]
         st.markdown(f"**Where they disagree ({len(diff)} of {len(merged)})**")
         if diff.empty:
-            st.caption("The engines gave the same result on every case.")
-        else:
+            st.write("The engines agree on every case.")        else:
             st.dataframe(diff[["request_id", "expected_category_rules", "actual_category_rules", "actual_category_llm",
                                "expected_priority_rules", "actual_priority_rules", "actual_priority_llm"]],
                          hide_index=True, width="stretch", column_config={

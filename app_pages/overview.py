@@ -45,23 +45,13 @@ if notes:
     ui.attention("Needs attention", notes)
 
 # ---- headline numbers: one row of equal cards ----
-if latest:
-    mt = latest["metrics"]
-    accuracy = ("Routing accuracy", ui.fmt_pct(mt["routing_accuracy"]),
-                f"{latest['dataset']}, {mt['n']} cases, {ui.engine_short(latest['engine'])}", "", "dark")
-else:
-    accuracy = ("Routing accuracy", "Not evaluated", "Run an evaluation in Replay lab", "", "dark")
-if n_processed:
-    saved = n_processed * (assumptions.manual_minutes - assumptions.assisted_minutes) / 60
-    time_saved = ("Estimated time saved", ui.fmt_hours(saved), "Estimate from your assumptions")
-else:
-    time_saved = ("Estimated time saved", "-", "Estimate, available once requests are processed")
+accuracy = ("Routing accuracy", ui.fmt_pct(latest["metrics"]["routing_accuracy"]) if latest else "-", "", "", "dark")
+saved = n_processed * (assumptions.manual_minutes - assumptions.assisted_minutes) / 60
 ui.kpi_cards([
     accuracy,
-    ("Requests processed", str(n_processed), "Through the inbox"),
-    ("Needing human review", str(n_flagged) if n_processed else "-",
-     f"{ui.fmt_pct(n_flagged / n_processed)} of processed" if n_processed else "Nothing processed yet"),
-    time_saved,
+    ("Requests processed", str(n_processed)),
+    ("Needing human review", str(n_flagged)),
+    ("Estimated time saved", ui.fmt_hours(saved)),
 ])
 
 # ---- charts ----
@@ -101,7 +91,6 @@ with right:
         fig.update_layout(height=340, margin=dict(l=0, r=0, t=10, b=0), legend=dict(orientation="h", y=-0.12, yanchor="top"),
                           paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, width="stretch")
-        st.caption(source)
 
 # ---- feedback + activity ----
 fb, act = st.columns([1, 2], gap="small")

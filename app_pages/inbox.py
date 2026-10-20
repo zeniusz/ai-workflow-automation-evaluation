@@ -118,7 +118,7 @@ with st.container(horizontal=True):
         new_request_dialog()
     if st.button("Upload CSV", icon=":material/upload:"):
         upload_dialog()
-    if results and not pending and st.button("Next: Replay lab", icon=":material/arrow_forward:", key="next_replay"):
+    if results and not pending and st.button("Next: Replay lab", type="primary", icon=":material/arrow_forward:", key="next_replay"):
         st.switch_page("app_pages/replay.py")
     if st.button("Process all", type="primary", icon=":material/play_arrow:", key="process_all",
                  disabled=not pending):
@@ -221,7 +221,6 @@ with detail_col, ui.card("detail"):
                      hide_index=True, width="stretch")
         if res.missing_information:
             st.markdown("**Missing:** " + ", ".join(res.missing_information))
-        st.caption(res.explanation)
     with tab_reply:
         st.text(res.suggested_response)
     with tab_ai:
@@ -246,7 +245,6 @@ with detail_col, ui.card("detail"):
                     st.success("Both engines agree.")
                 else:
                     st.warning("The engines disagree. Check this request before approving.")
-                st.caption(f"Second opinion from: {other.engine}")
     with tab_raw:
         st.json(res.model_dump())
 

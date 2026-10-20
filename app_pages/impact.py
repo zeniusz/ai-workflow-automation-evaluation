@@ -39,7 +39,7 @@ with out, ui.card("results"):
     verdict = ("Net benefit" if r.net_benefit > 0 else "Net cost" if r.net_benefit < 0 else "Break-even")
     st.html(f'<div class="ops-headline"><p class="label">Estimated net benefit per week</p>'
             f'<p class="value {tone}">{ui.fmt_money(r.net_benefit)}</p>'
-            f'<p class="sub">{verdict}: labour capacity value minus AI operating cost (estimate)</p></div>')
+            f'<p class="sub">{verdict}</p></div>')
     if requests == 0:
         st.info("Requests per week is zero, so every figure is zero. Enter a weekly volume to see an estimate.")
     if r.hours_saved < 0:
@@ -48,12 +48,12 @@ with out, ui.card("results"):
 
     change = "n/a" if r.percent_reduction is None else f"{-r.percent_reduction * 100:+.1f}%".replace("-", "−")
     ui.kpi_cards([
-        ("Baseline handling", ui.fmt_hours(r.baseline_hours), "per week, manual"),
-        ("AI-assisted handling", ui.fmt_hours(r.assisted_hours), "per week, with review"),
-        ("Hours saved", ui.fmt_hours(r.hours_saved), "per week"),
-        ("Change in handling time", change, "negative is faster"),
-        ("Labour capacity value", ui.fmt_money(r.capacity_value), "per week"),
-        ("AI operating cost", ui.fmt_money(r.ai_cost), "per week"),
+        ("Baseline handling per week", ui.fmt_hours(r.baseline_hours)),
+        ("AI-assisted handling per week", ui.fmt_hours(r.assisted_hours)),
+        ("Hours saved per week", ui.fmt_hours(r.hours_saved)),
+        ("Change in handling time", change),
+        ("Labour capacity value per week", ui.fmt_money(r.capacity_value)),
+        ("AI operating cost per week", ui.fmt_money(r.ai_cost)),
     ], per_row=2)
 
     frame = pd.DataFrame({"Process": ["Manual", "AI-assisted"], "Hours": [r.baseline_hours, r.assisted_hours]})
@@ -77,4 +77,3 @@ with out, ui.card("results"):
 | Net benefit | capacity value − AI cost | {ui.fmt_money(r.net_benefit)} |
 """
         )
-    st.caption("All figures are estimates from your assumptions, not realised savings.")
