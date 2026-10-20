@@ -99,7 +99,7 @@ with right:
 # ---- feedback + activity ----
 fb, act = st.columns([1, 2], gap="small")
 with fb:
-    with ui.card("feedback", height=300):
+    with ui.card("feedback", height=400):
         st.markdown("**Human review**")
         stat_values = list(st.session_state.get("status", {}).values())
         waiting = stat_values.count("Ready for review")
@@ -118,7 +118,7 @@ with fb:
             if st.button("Start reviewing", type="primary", key="start_review"):
                 st.switch_page("app_pages/review.py")
 with act:
-    with ui.card("activity", height=300):
+    with ui.card("activity", height=400):
         st.markdown("**Recent activity**")
         recent = storage.runs(limit=12, month=month)
         if recent.empty:
