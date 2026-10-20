@@ -73,3 +73,14 @@ def test_empty_database_summary(storage):
 def test_bad_run_type_rejected(storage):
     with pytest.raises(ValueError):
         storage.save_run("other", "e", "d")
+
+
+def test_records_can_be_dated_for_month_filters(storage, result):
+    run_id = storage.save_run("inbox", "e", "sample", results=[result], at="2026-09-03T10:00:00+00:00")
+    storage.save_review(result, {"category": result.category, "priority": result.priority, "team": result.team},
+                        run_id=run_id, reviewer="Ann", at="2026-09-04T10:00:00+00:00")
+    storage.send_message("Ann", "All teams", "Hi", "Hello.", at="2026-08-01T09:00:00+00:00")
+    assert storage.months() == ["2026-09"]
+    assert len(storage.runs(month="2026-09")) == 1 and storage.runs(month="2026-10").empty
+    assert storage.review_summary("2026-09")["total"] == 1 and storage.review_summary("2026-10")["total"] == 0
+    assert storage.messages().iloc[0]["created_at"].startswith("2026-08")

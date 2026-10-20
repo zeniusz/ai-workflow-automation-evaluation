@@ -138,7 +138,7 @@ def test_first_launch_fills_every_page_with_real_output(tmp_path, monkeypatch):
     at.run()
     assert len(at.session_state["results"]) == 30
     storage = ui_common.get_storage()
-    assert len(storage.runs(limit=10)) == 3 and not storage.messages().empty
+    assert len(storage.runs(limit=50)) == 9 and len(storage.months()) == 3 and not storage.messages().empty
     for page in PAGES:
         at.switch_page(page).run()
         assert not at.exception, page

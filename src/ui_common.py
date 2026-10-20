@@ -100,6 +100,55 @@ def inject_css() -> None:
     st.html(_CSS)
 
 
+def month_label(month: str) -> str:
+    """'2026-09' -> 'September 2026'."""
+    import datetime as dt
+
+    return dt.datetime.strptime(month, "%Y-%m").strftime("%B %Y")
+
+
+def _bootstrap_history(storage: Storage, items: list[dict]) -> None:
+    """Demo history for the two previous months, produced by running the real workflow on slices of the sample queue
+    and dating the records in those months. It exists so the month filters have something to show; it is not real usage."""
+    import datetime as dt
+
+    from .evaluation import evaluate
+
+    today = dt.date.today().replace(day=1)
+    reviewers = ["Demo Reviewer", "Maria Keller", "Sam Ortiz"]
+    teams_by_name = {"Demo Reviewer": "Operations reviewer", "Maria Keller": "Operations lead", "Sam Ortiz": "AI analyst"}
+    del teams_by_name  # roles live on the accounts; only names are needed here
+    slices = {1: (0, 12, 9), 2: (12, 22, 6)}  # months back -> (start, stop, share of results that get reviewed)
+    for back, (start, stop, reviewed) in slices.items():
+        month = today
+        for _ in range(back):
+            month = (month - dt.timedelta(days=1)).replace(day=1)
+        def stamp(day: int, hour: int = 10) -> str:
+            return f"{month:%Y-%m}-{day:02d}T{hour:02d}:15:00+00:00"
+
+        chunk = items[start:stop]
+        results = []
+        for n, item in enumerate(chunk):
+            res = run_triage(item["request_id"], item["text"], item["requester"] or None)
+            results.append(res.model_copy(update={"processed_at": stamp(3 + n % 20)}))
+        run_id = storage.save_run("inbox", RULES_ENGINE, "sample", results=results, at=stamp(3))
+        for n, res in enumerate(results[:reviewed]):
+            final = {"category": res.category, "priority": res.priority, "team": res.team}
+            if n % 5 == 4:  # a reviewer changes about one in five priorities
+                final["priority"] = "Urgent" if res.priority != "Urgent" else "High"
+            storage.save_review(res, final, run_id=run_id, reviewer=reviewers[n % 3], at=stamp(4 + n % 20, 14))
+        for name, data in (("Labelled sample set", sample_data()), ("Holdout set", holdout_data())):
+            run = evaluate(data, lambda i, t, q: run_triage(i, t, q), dataset=name, engine=RULES_ENGINE)
+            storage.save_run("replay", RULES_ENGINE, name, n_requests=run.metrics["n"],
+                             n_flagged=run.metrics["review_flagged"], metrics=run.metrics, at=stamp(20, 16))
+        for res in results:
+            if res.priority == "Urgent":
+                storage.send_message("OpsFlow workflow", res.team, f"Urgent {res.category.lower()} request {res.request_id}",
+                                     f"{res.summary}\n\n{res.review_reason}", "Urgent", res.request_id, at=stamp(5, 9))
+        storage.send_message(reviewers[1], "All teams", "Weekly queue check", "Please clear flagged requests by Friday.",
+                             at=stamp(10, 8))
+
+
 def _bootstrap(storage: Storage, items: list[dict]) -> None:
     """First launch only: run the real rule-based workflow on the sample queue and both labelled sets."""
     from .evaluation import evaluate
@@ -130,6 +179,7 @@ def load_workspace() -> None:
         for item in items:
             storage.upsert_request(item)
     if config.autoseed() and not config.llm_available() and storage.runs(limit=1).empty:
+        _bootstrap_history(storage, items)
         _bootstrap(storage, items)
     results, run_ids, status = storage.load_results()
     st.session_state.queue = items
@@ -212,9 +262,9 @@ def section_label(text: str) -> None:
     st.markdown(f'<p class="ops-section">{text}</p>', unsafe_allow_html=True)
 
 
-def card(name: str):
-    """A white bordered card for charts and tables."""
-    return st.container(border=True, key=f"card_{name}")
+def card(name: str, height: int | None = None):
+    """A white bordered card for charts and tables. Give a height to line neighbouring cards up."""
+    return st.container(border=True, key=f"card_{name}", height=height or "content")
 
 
 _ICONS = {

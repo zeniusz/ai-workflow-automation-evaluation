@@ -19,7 +19,8 @@ ui.page_header("Overview", f"{_greeting}, {st.session_state['user']['name'].spli
 
 pick, _ = st.columns([1, 3])
 with pick:
-    month_label = st.selectbox("Period", ["All time", *storage.months()], key="overview_month", label_visibility="collapsed")
+    month_label = st.selectbox("Period", ["All time", *storage.months()], key="overview_month",
+                               label_visibility="collapsed", format_func=lambda m: m if m == "All time" else ui.month_label(m))
 month = None if month_label == "All time" else month_label
 processed = storage.processed()
 if month:
@@ -57,28 +58,31 @@ ui.kpi_cards([
 # ---- charts ----
 left, right = st.columns([2, 1], gap="small")
 with left:
-    with ui.card("accuracy_trend"):
+    with ui.card("accuracy_trend", height=420):
         st.markdown("**Routing accuracy by evaluation run**")
-        runs = storage.runs(limit=200, month=month)
+        runs = storage.runs(limit=500, month=month)
         runs = runs[(runs["run_type"] == "replay") & runs["metrics_json"].notna()].copy()
         if runs.empty:
             st.caption("No evaluation runs yet.")
         else:
             runs["Routing accuracy"] = runs["metrics_json"].apply(lambda j: json.loads(j)["routing_accuracy"])
-            runs["Run time"] = pd.to_datetime(runs["created_at"]).dt.strftime("%b %d %H:%M")
-            runs["Dataset"] = runs["dataset"] + " (" + runs["engine"].map(ui.engine_short) + ")"
-            fig = px.bar(runs.iloc[::-1], x="Run time", y="Routing accuracy", color="Dataset", barmode="group",
-                         text=runs.iloc[::-1]["Routing accuracy"].map(lambda v: f"{v:.0%}"),
-                         color_discrete_sequence=[ui.MINT_DARK, ui.NAVY, ui.GREY])
-            fig.update_xaxes(type="category")
+            runs["Month"] = pd.to_datetime(runs["created_at"]).dt.strftime("%b %Y")
+            runs["Month order"] = pd.to_datetime(runs["created_at"]).dt.strftime("%Y-%m")
+            runs["Test set"] = runs["dataset"]
+            latest_per = (runs.sort_values("created_at").groupby(["Month order", "Month", "Test set"], as_index=False).last()
+                          .sort_values("Month order"))
+            fig = px.bar(latest_per, x="Month", y="Routing accuracy", color="Test set", barmode="group",
+                         text=latest_per["Routing accuracy"].map(lambda v: f"{v:.0%}"),
+                         color_discrete_sequence=[ui.MINT_DARK, ui.NAVY])
+            fig.update_xaxes(categoryorder="array", categoryarray=list(dict.fromkeys(latest_per["Month"])))
             fig.update_traces(textposition="outside", cliponaxis=False)
-            fig.update_layout(height=300, margin=dict(l=0, r=0, t=10, b=0),
+            fig.update_layout(height=330, margin=dict(l=0, r=0, t=10, b=0),
                               yaxis=dict(range=[0, 1.15], tickformat=".0%", title=None), xaxis=dict(title=None),
-                              legend=dict(orientation="h", y=-0.2, title=None),
+                              legend=dict(orientation="h", y=-0.15, title=None),
                               plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig, width="stretch")
 with right:
-    with ui.card("categories"):
+    with ui.card("categories", height=420):
         st.markdown("**Request categories**")
         if n_processed:
             counts, source = processed["category"].value_counts(), "Processed requests"
@@ -88,14 +92,14 @@ with right:
         fig = px.pie(frame[frame["Requests"] > 0], names="Category", values="Requests", hole=0.62, color="Category",
                      color_discrete_map=dict(zip(CATEGORIES, [ui.NAVY, ui.MINT_DARK, "#3DDBB0", "#7F93AD", "#D0D5DD"])))
         fig.update_traces(textinfo="value", sort=False)
-        fig.update_layout(height=340, margin=dict(l=0, r=0, t=10, b=0), legend=dict(orientation="h", y=-0.12, yanchor="top"),
+        fig.update_layout(height=340, margin=dict(l=0, r=0, t=10, b=0), legend=dict(orientation="h", y=-0.1, yanchor="top"),
                           paper_bgcolor="rgba(0,0,0,0)")
         st.plotly_chart(fig, width="stretch")
 
 # ---- feedback + activity ----
 fb, act = st.columns([1, 2], gap="small")
 with fb:
-    with ui.card("feedback"):
+    with ui.card("feedback", height=300):
         st.markdown("**Human review**")
         stat_values = list(st.session_state.get("status", {}).values())
         waiting = stat_values.count("Ready for review")
@@ -114,7 +118,7 @@ with fb:
             if st.button("Start reviewing", type="primary", key="start_review"):
                 st.switch_page("app_pages/review.py")
 with act:
-    with ui.card("activity"):
+    with ui.card("activity", height=300):
         st.markdown("**Recent activity**")
         recent = storage.runs(limit=12, month=month)
         if recent.empty:

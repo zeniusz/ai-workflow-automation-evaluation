@@ -181,7 +181,7 @@ class Storage:
 
     # ---- internal messages (stored locally; nothing is emailed or sent to an external system) ----
     def send_message(self, sender: str, recipient: str, subject: str, body: str,
-                     priority: str = "Normal", request_id: Optional[str] = None) -> str:
+                     priority: str = "Normal", request_id: Optional[str] = None, at: Optional[str] = None) -> str:
         if recipient != "All teams" and recipient not in TEAMS:
             raise ValueError("Choose a team or 'All teams'.")
         if priority not in ("Normal", "Urgent"):
@@ -191,7 +191,7 @@ class Storage:
         message_id = _new_id("msg")
         with self._connect() as conn:
             conn.execute("INSERT INTO messages VALUES (?,?,?,?,?,?,?,?)",
-                         (message_id, _now(), sender.strip()[:60], recipient, priority,
+                         (message_id, at or _now(), sender.strip()[:60], recipient, priority,
                           subject.strip()[:120], body.strip()[:2000], request_id))
         return message_id
 
@@ -222,6 +222,7 @@ class Storage:
         n_requests: Optional[int] = None,
         n_flagged: Optional[int] = None,
         metrics: Optional[dict] = None,
+        at: Optional[str] = None,
     ) -> str:
         """Record one processing run (and, for inbox runs, per-request labels). Returns run_id."""
         if run_type not in ("inbox", "replay"):
@@ -232,7 +233,7 @@ class Storage:
         with self._connect() as conn:
             conn.execute(
                 "INSERT INTO runs VALUES (?,?,?,?,?,?,?,?)",
-                (run_id, run_type, dataset, engine, _now(), n, int(flagged),
+                (run_id, run_type, dataset, engine, at or _now(), n, int(flagged),
                  json.dumps(metrics) if metrics is not None else None),
             )
             conn.executemany(
@@ -250,6 +251,7 @@ class Storage:
         run_id: Optional[str] = None,
         note: str = "",
         reviewer: str = "",
+        at: Optional[str] = None,
     ) -> str:
         """Store a reviewer decision. 'approved' if nothing changed, otherwise 'corrected'."""
         allowed = {"category": CATEGORIES, "priority": PRIORITIES, "team": TEAMS}
@@ -261,7 +263,7 @@ class Storage:
         with self._connect() as conn:
             conn.execute(
                 "INSERT INTO reviews VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                (review_id, run_id, result.request_id, result.engine, _now(),
+                (review_id, run_id, result.request_id, result.engine, at or _now(),
                  "corrected" if changed else "approved",
                  result.category, result.priority, result.team,
                  final["category"], final["priority"], final["team"],

@@ -17,6 +17,7 @@ Staff read each request by hand: a broken infusion pump, a ceiling leak, a suppl
 - **Lets a person decide.** On the Human review page you approve a result or change the category, priority or team. Each decision is saved with your name.
 - **Measures errors.** The Replay lab runs the workflow on requests with known correct answers and lists every wrong result, including wrong ones that were not flagged.
 - **Sends team messages.** You can write a message to one team or to everyone, or draft it from an urgent request. Messages stay inside the app; nothing is emailed.
+- **Filters by month.** Overview and Messages can be limited to one month.
 - **Estimates impact.** You enter weekly volume, minutes per request and costs, and it calculates hours and euros per week. These are estimates from your inputs.
 
 Nothing is sent to any outside system, and nothing happens without a person.
@@ -52,7 +53,7 @@ streamlit run app.py
 
 Sign in with the prefilled demo account: `demo@opsflow.lab`, password `opsflow-demo-2026`. You can change them with `OPSFLOW_DEMO_EMAIL` and `OPSFLOW_DEMO_PASSWORD`. This is a demo login, not real security. Passwords are stored as salted hashes in the local database, and there is no sign-up.
 
-On first start, the app sorts the 30 sample requests and runs both test sets, so every page has results. Set `OPSFLOW_AUTOSEED=0` to turn this off.
+On first start, the app sorts the 30 sample requests and runs both test sets, so every page has results. It also adds **demo history** for the two previous months: the same workflow is run on slices of the sample requests and the records are dated in those months, so the month filters on Overview and Messages have something to show. This history is made up for the demo and is not real usage. Because the rules never change, each month's test accuracy is the same. Set `OPSFLOW_AUTOSEED=0` to turn all of this off.
 
 Run the tests:
 

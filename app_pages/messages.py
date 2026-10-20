@@ -54,11 +54,15 @@ with compose, ui.card("compose"):
         st.success("Message sent.")
 
 with feed, ui.card("feed"):
-    f1, f2 = st.columns([1, 1], vertical_alignment="center")
+    f1, f2, f3 = st.columns([1, 1, 1], vertical_alignment="center")
     view_mode = f1.segmented_control("View", ["All", "Sent by me"], default="All", key="msg_view",
                                      label_visibility="collapsed") or "All"
     team = f2.selectbox("Team", ["All teams", *TEAMS], label_visibility="collapsed", key="msg_filter")
-    inbox = storage.messages(None if team == "All teams" else team)
+    month_pick = f3.selectbox("Month", ["All time", *storage.months()], label_visibility="collapsed", key="msg_month",
+                              format_func=lambda m: m if m == "All time" else ui.month_label(m))
+    inbox = storage.messages(None if team == "All teams" else team, limit=500)
+    if month_pick != "All time":
+        inbox = inbox[inbox["created_at"].str.startswith(month_pick)]
     if view_mode == "Sent by me":
         inbox = inbox[inbox["sender"] == user["name"]]
     inbox = inbox.reset_index(drop=True)
