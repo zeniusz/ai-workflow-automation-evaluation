@@ -1,0 +1,31 @@
+request_id,requester,request_text,expected_category,expected_priority,expected_team
+S-001,Ana Silva,"The infusion pump in Exam Room 4 (asset tag BM-2041) keeps beeping an occlusion alarm even with a new line. Can someone from biomedical take a look today? Ext 3120.",Equipment,High,Biomedical Engineering
+S-002,Tom Becker,"There is water leaking from the ceiling above the waiting room reception desk. A bucket is catching it for now.",Facilities,High,Facilities Maintenance
+S-003,Priya Nair,"Please reorder 10 boxes of nitrile gloves (medium) for the Pharmacy. We are running low.",Supplies,Normal,Supply & Procurement
+S-004,Lena Fischer,"I'm locked out of my account after changing my password this morning. I'm at the front desk, ext 2210.",IT,High,IT Service Desk
+S-005,Marco Rossi,"Strong smell of gas near the staff kitchen on Floor 1. Please send someone immediately.",Facilities,Urgent,Safety & Compliance
+S-006,Ana Silva,"The vaccine fridge in the storage room shows a temperature alarm, reading 11 C. Asset tag BM-1180.",Equipment,Urgent,Biomedical Engineering
+S-007,Tom Becker,"The paint in the corridor outside Room 12 is peeling. No rush, whenever the team has time.",Facilities,Low,Facilities Maintenance
+S-008,Sam Ortiz,"The printer in Radiology is not working and displays an error message. Contact: sam.ortiz@northfield.example",IT,High,IT Service Desk
+S-009,Hannah Weiss,"We need 5 packs of A4 paper and 2 boxes of pens for the admin office, nice to have by next month.",Supplies,Low,Supply & Procurement
+S-010,Priya Nair,"Calibration is due for the blood pressure monitors in Ward 3. Please schedule it when possible, 6 devices.",Equipment,Low,Biomedical Engineering
+S-011,Lena Fischer,"The elevator on Floor 2 is out of order and patients using wheelchairs cannot reach the lab.",Facilities,High,Facilities Maintenance
+S-012,Marco Rossi,"Wi-Fi keeps dropping in the Paediatrics wing since this morning, staff cannot access the booking system.",IT,High,IT Service Desk
+S-013,Hannah Weiss,"The machine in the back room is making a strange noise.",Other,Normal,Operations Triage
+S-014,Ana Silva,"Out of stock of sterile gauze in Exam Room 2. Need 20 packs before tomorrow's clinic.",Supplies,High,Supply & Procurement
+S-015,Sam Ortiz,"Please install the new scheduling software on the laptop at Reception. Laptop tag IT-5532.",IT,Normal,IT Service Desk
+S-016,Tom Becker,"Light bulbs are flickering in the staff room. Probably needs replacing.",Facilities,Normal,Facilities Maintenance
+S-017,Priya Nair,"The ultrasound machine in Room 7 shows a black screen on startup. Patients are booked from 9am.",Equipment,High,Biomedical Engineering
+S-018,Lena Fischer,"Can someone please help with the thing we discussed yesterday?",Other,Normal,Operations Triage
+S-019,Marco Rossi,"The parking lot lights near the entrance are not working and it is dark when staff leave at 7pm.",Facilities,High,Facilities Maintenance
+S-020,Hannah Weiss,"URGENT: nobody in the clinic can log in to ClinicWare, appointments cannot be checked in.",IT,Urgent,IT Service Desk
+S-021,Sam Ortiz,"Could we get 3 cases of hand sanitiser for the waiting room dispensers?",Supplies,Normal,Supply & Procurement
+S-022,Ana Silva,"The autoclave in the sterilisation room failed its cycle twice. Tag BM-0932.",Equipment,High,Biomedical Engineering
+S-023,Tom Becker,"Mice droppings found in the storage room.",Facilities,High,Facilities Maintenance
+S-024,Priya Nair,"My laptop screen is cracked.",IT,Normal,IT Service Desk
+S-025,Lena Fischer,"The motor on the hospital bed in Ward 2 has stopped working.",Equipment,High,Biomedical Engineering
+S-026,Marco Rossi,"Printer in the admin office is out of toner. Please order 2 toner cartridges.",Supplies,Normal,Supply & Procurement
+S-027,Hannah Weiss,"The air conditioning in Exam Room 5 is blowing warm air. Room is too hot for patients.",Facilities,High,Facilities Maintenance
+S-028,Sam Ortiz,"Sparks came out of the wall socket near the lab bench and there is a burning smell.",Facilities,Urgent,Safety & Compliance
+S-029,Ana Silva,"Request for a new standing desk.",Facilities,Normal,Facilities Maintenance
+S-030,Tom Becker,"Please add a second monitor to the Lab workstation.",IT,Normal,IT Service Desk

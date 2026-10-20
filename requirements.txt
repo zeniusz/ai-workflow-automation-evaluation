@@ -1,0 +1,9 @@
+streamlit>=1.50
+pandas>=2.2
+plotly>=5.24
+pydantic>=2.6
+openai>=1.40
+python-dotenv>=1.0
+# pyarrow 26 DLLs are blocked by some Windows Application Control policies; 25.x works.
+pyarrow>=21,<26
+pytest>=8.0

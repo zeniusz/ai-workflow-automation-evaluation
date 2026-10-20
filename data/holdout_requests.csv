@@ -1,0 +1,13 @@
+request_id,requester,request_text,expected_category,expected_priority,expected_team
+H-001,Jonas Berg,"Patient monitor in Bay 2 is showing a flat line on the SpO2 reading even though the patient is fine. Please check, tag BM-3310.",Equipment,High,Biomedical Engineering
+H-002,Mia Dubois,"Hot water not available in the staff bathroom on Floor 3.",Facilities,High,Facilities Maintenance
+H-003,Omar Haddad,"Please order 15 boxes of surgical masks and 4 boxes of gloves for Ward 1.",Supplies,Normal,Supply & Procurement
+H-004,Jonas Berg,"I can't connect to the VPN from home, getting a timeout. j.novak@northfield.example",IT,High,IT Service Desk
+H-005,Mia Dubois,"The door to the medication room won't latch properly and stays open.",Facilities,High,Facilities Maintenance
+H-006,Omar Haddad,"Is anyone able to look at the thing in the corner?",Other,Normal,Operations Triage
+H-007,Jonas Berg,"Fire alarm panel in the corridor outside Room 9 is beeping and there is a smell of smoke.",Facilities,Urgent,Safety & Compliance
+H-008,Mia Dubois,"Our label printer jammed again. Whenever possible could IT have a look? Reception, ext 2201.",IT,Low,IT Service Desk
+H-009,Omar Haddad,"We are nearly out of specimen cups in the lab, need 200 by Friday.",Supplies,High,Supply & Procurement
+H-010,Jonas Berg,"The ECG machine in Room 3 needs its annual calibration. Not urgent, anytime this quarter.",Equipment,Low,Biomedical Engineering
+H-011,Mia Dubois,"Elevator stuck between floors with a person inside!",Facilities,Urgent,Safety & Compliance
+H-012,Omar Haddad,"New starter Maria needs a laptop, email account and access to ClinicWare by 1 March. Contact HR on ext 2002.",IT,Normal,IT Service Desk
